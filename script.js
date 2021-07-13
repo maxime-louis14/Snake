@@ -7,6 +7,8 @@ window.onload = function()
     var delay = 100;
     var sankee;
     var applee;
+    var widthInBlocks = canvasWidth/blockSize;
+    var heightInBlocks = canvasHeight/blockSize;
     
     init();
 
@@ -24,12 +26,21 @@ window.onload = function()
     }    
     
     function refreshCanvas()
-    {  
-        ctx.clearRect(0,0,canvasWidth, canvasHeight);
+    { 
         sankee.advance();
+        if(sankee.checkCollision())
+        {
+            //duper
+        }
+        else
+        {
+        ctx.clearRect(0,0,canvasWidth, canvasHeight);
+
         sankee.draw();
         applee.draw();
         setTimeout(refreshCanvas,delay);
+    }
+    
     }
 
     function drawBlock(ctx, position)
@@ -37,7 +48,7 @@ window.onload = function()
         var x = position[0] * blockSize;
         var y = position[1] * blockSize;
         ctx.fillRect(x ,y , blockSize, blockSize);
-    }
+    };
 
     function Snake(body, direction)
     {
@@ -99,6 +110,39 @@ window.onload = function()
                 this.direction = newDirection;
             }
         };
+
+        this.checkCollision = function()
+        {
+            var wallCollison = false;
+            var sankeCollsion = false;
+            var head = this.body[0];
+            var rest = this.body.slice(1);
+            var snakeX = head[0];
+            var snakeY = head[1];
+            var minX = 0;
+            var minY = 0;
+            var maxX = widthInBlocks -1;
+            var maxY = heightInBlocks-1;
+            var isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX;
+            var isNotBetweenVerticallWalls = snakeY < minY || snakeY > maxY;
+            
+            if(isNotBetweenHorizontalWalls || isNotBetweenVerticallWalls)
+            {
+                wallCollison = true;
+            }
+
+            for(var i = 0; i < rest.length ; i++)
+            {
+                if( snakeX === rest[i][0] && rest snakeY === rest[i][1] );
+
+                {
+                    sankeCollsion = true;
+                }
+            }
+
+            return wallCollison || sankeCollsion;
+        };
+
     }
 
     function Apple(position)
