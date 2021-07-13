@@ -39,7 +39,7 @@ window.onload = function()
         sankee.draw();
         applee.draw();
         setTimeout(refreshCanvas,delay);
-    }
+        }
     
     }
 
@@ -133,13 +133,11 @@ window.onload = function()
 
             for(var i = 0; i < rest.length ; i++)
             {
-                if( snakeX === rest[i][0] && rest snakeY === rest[i][1] );
-
+                if( snakeX === rest[i][0] && snakeY === rest[i][1] )
                 {
                     sankeCollsion = true;
                 }
             }
-
             return wallCollison || sankeCollsion;
         };
 
