@@ -36,6 +36,7 @@ window.onload = function()
         {
           if(sankee.isEatingApple(applee))
           {
+              sankee.ateApple = true;
               do
               {
                 applee.setNewPosition();
@@ -61,6 +62,7 @@ window.onload = function()
     {
         this.body = body;
         this.direction = direction;
+        this.ateApple = false;
         this.draw = function()
         {
             ctx.save();
