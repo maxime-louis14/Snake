@@ -4,7 +4,7 @@ var snakeGame;
 
 window.onload = function()
 {
-    snakeGame = newSnakeGame(900,600,100);
+    snakeGame = new SnakeGame(900,600,30,100);
     snake = new Snake ([[6,4], [5,4], [4,4] ,[3,4], [2,4]], "right");
     apple = new Apple([10,10]);    
     snakeGame.init(snake,apple);
@@ -45,7 +45,7 @@ function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
     this.canvas.width = canvasWidth;
     this.canvas.height = canvasHeight;
     this.canvas.style.border = "1px solid";
-    document.body.appendChild(canvas);
+    document.body.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
     this. blockSize = blockSize;
     this.delay = delay;
@@ -69,7 +69,7 @@ function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
     var refreshCanvas = function()
     { 
         instance.snake.advance();
-        if(instance.snake.checkCollision())
+        if(instance.checkCollision())
         {
             //GAME OVER
             instance.gameOver();
@@ -82,9 +82,9 @@ function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
               instance.sankee.ateApple = true;
               do
               {
-                instance.apple.setNewPosition();
+                instance.apple.setNewPosition(instance.widthInBlocks, instance.heightInBlocks);
               }
-              while(instance.apple.isOnSnake(snakee))
+              while(instance.apple.isOnSnake(instance.snake))
           }
           instance.ctx.clearRect(0,0,instance.canvas.Width, instance.canvas.Height);
           instance.snake.draw(instance.ctx, instance.blockSize);
@@ -135,7 +135,7 @@ function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
         this.drawScore = function()
     {
         this.ctx.save();
-        this.ctx.fillText(score.toString(), 5,this.canvas.height, -5);
+        this.ctx.fillText(this.score.toString(), 5, this.canvas.height -5);
         this.ctx.restore();   
     }
     
@@ -152,8 +152,8 @@ function Snake(body, direction)
         ctx.fillStyle = "#ff0000";
         for(var i = 0; i < this.body.length; i++)
         {
-            var x = position[0] * blockSize;
-            var y = position[1] * blockSize;
+            var x = this.body[i][0] * blockSize;
+            var y = this.body[i][1] * blockSize;
             ctx.fillRect(x , y , blockSize, blockSize);
         }
         ctx.restore();
@@ -173,7 +173,7 @@ function Snake(body, direction)
                 nextPosition[1] += 1;    
             break;
             case "up":
-                nextPosition[1] -= 1;*6
+                nextPosition[1] -= 1;6
                 break;
             default:
                 throw("Invalid Direction");    
@@ -235,7 +235,7 @@ function Apple(position)
 
         };
             //Position aléatoire de la Pomme.
-        this.setNewPosition = function()
+        this.setNewPosition = function(widthInBlocks,heightInBlocks)
         {
             var newX = Math.round(Math.random() * (widthInBlocks -1));
             var newY = Math.round(Math.random() * (heightInBlocks -1));
@@ -256,15 +256,3 @@ function Apple(position)
             return isOnSnake;
         };
     }
-
-    function restart()
-    {
-        sankee = new Snake ([[6,4], [5,4], [4,4] ,[3,4], [2,4]], "right");
-        applee = new Apple([10,10]);
-        score = 0; 
-        refreshCanvas();   
-    }
-
-  
-
-}
