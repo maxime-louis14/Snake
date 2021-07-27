@@ -1,3 +1,108 @@
+var snake;
+var apple;
+var snakeGame;
+
+function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
+{
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = canvasWidth;
+    this.canvas.height = canvasHeight;
+    this.canvas.style.border = "1px solid";
+    document.body.appendChild(canvas);
+    this.ctx = this.canvas.getContext('2d');
+    this. blockSize = blockSize;
+    this.delay = delay;
+    this.snake;
+    this.apple;
+    this.widthInBlocks = canvasWidth/blockSize;
+    this.heightInBlocks = canvasHeight/blockSize;
+    this.score;
+    var instance = this;
+    var timeout;
+
+    this.init = function(snake, apple)
+    {
+        this.snake = snake;
+        this.apple = apple;
+        this.score = 0;
+        clearTimeout(timeout); 
+        refreshCanvas();    
+    }
+
+    var refreshCanvas = function()
+    { 
+        instance.snake.advance();
+        if(instance.snake.checkCollision())
+        {
+            //GAME OVER
+            instance.gameOver();
+        }
+        else
+        {
+          if(instance.snake.isEatingApple(apple))
+          {
+              instance.score++;
+              instance.sankee.ateApple = true;
+              do
+              {
+                instance.apple.setNewPosition();
+              }
+              while(instance.apple.isOnSnake(snakee))
+          }
+          instance.ctx.clearRect(0,0,instance.canvas.Width, instance.canvas.Height);
+          instance.snake.draw();
+          instance.apple.draw();
+          instance.drawScore();
+          timeout = setTimeout(refreshCanvas,delay);
+        }
+    
+    }
+    
+    this.checkCollision = function()
+        {
+            var wallCollison = false;
+            var sankeCollsion = false;
+            var head = this.snake.body[0];
+            var rest = this.snake.body.slice(1);
+            var snakeX = head[0];
+            var snakeY = head[1];
+            var minX = 0;
+            var minY = 0;
+            var maxX = this.widthInBlocks -1;
+            var maxY = this.heightInBlocks-1;
+            var isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX;
+            var isNotBetweenVerticallWalls = snakeY < minY || snakeY > maxY;
+            
+            if(isNotBetweenHorizontalWalls || isNotBetweenVerticallWalls)
+            {
+                wallCollison = true;
+            }
+
+            for(var i = 0; i < rest.length ; i++)
+            {
+                if( snakeX === rest[i][0] && snakeY === rest[i][1] )
+                {
+                    sankeCollsion = true;
+                }
+            }
+            return wallCollison || sankeCollsion;
+        };
+
+        this.gameOver = function()
+        {
+            this.ctx.save();
+            this.ctx.fillText(" Game Over ", 5, 15);
+            this.ctx.fillText("Appuyer sur la touche espace pour rejouer", 5, 30);
+            this.ctx.restore();
+        };
+        this.drawScore = function()
+    {
+        this.ctx.save();
+        this.ctx.fillText(score.toString(), 5,this.canvas.height, -5);
+        this.ctx.restore();   
+    }
+    
+}
 window.onload = function()
 {
     var canvasWidth = 900;
@@ -9,53 +114,22 @@ window.onload = function()
     var applee;
     var widthInBlocks = canvasWidth/blockSize;
     var heightInBlocks = canvasHeight/blockSize;
+    var score;
     
     init();
 
-    function init()
+    function restart()
     {
-        var canvas = document.createElement('canvas');
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-        canvas.style.border = "1px solid";
-        document.body.appendChild(canvas);
-        ctx = canvas.getContext('2d');
-        sankee = new Snake ([[6,4], [5,4], [4,4]], "right");
-        applee = new Apple([10,10]); 
-        refreshCanvas();    
-    }    
-    
-    function refreshCanvas()
-    { 
-        sankee.advance();
-        if(sankee.checkCollision())
-        {
-            //GAME OVER
-        }
-        else
-        {
-          if(sankee.isEatingApple(applee))
-          {
-              sankee.ateApple = true;
-              do
-              {
-                applee.setNewPosition();
-              }
-              while(applee.isOnSnake(sankee))
-          }
-          ctx.clearRect(0,0,canvasWidth, canvasHeight);
-          sankee.draw();
-          applee.draw();
-          setTimeout(refreshCanvas,delay);
-        }
-    
+        sankee = new Snake ([[6,4], [5,4], [4,4] ,[3,4], [2,4]], "right");
+        applee = new Apple([10,10]);
+        score = 0; 
+        refreshCanvas();   
     }
+
 
     function drawBlock(ctx, position)
     {
-        var x = position[0] * blockSize;
-        var y = position[1] * blockSize;
-        ctx.fillRect(x ,y , blockSize, blockSize);
+       
     };
 
     function Snake(body, direction)
@@ -70,6 +144,9 @@ window.onload = function()
             for(var i = 0; i < this.body.length; i++)
             {
                 drawBlock(ctx, this.body[i]);
+                var x = position[0] * blockSize;
+                var y = position[1] * blockSize;
+                ctx.fillRect(x , y , blockSize, blockSize);
             }
             ctx.restore();
         };
@@ -94,7 +171,10 @@ window.onload = function()
                     throw("Invalid Direction");    
             }
             this.body.unshift(nextPosition);
+            if (!this.ateApple)
             this.body.pop();
+            else
+            this.ateApple = false;
         };
 
         this.setDirection = function(newDirection)
@@ -118,36 +198,6 @@ window.onload = function()
             {
                 this.direction = newDirection;
             }
-        };
-
-        this.checkCollision = function()
-        {
-            var wallCollison = false;
-            var sankeCollsion = false;
-            var head = this.body[0];
-            var rest = this.body.slice(1);
-            var snakeX = head[0];
-            var snakeY = head[1];
-            var minX = 0;
-            var minY = 0;
-            var maxX = widthInBlocks -1;
-            var maxY = heightInBlocks-1;
-            var isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX;
-            var isNotBetweenVerticallWalls = snakeY < minY || snakeY > maxY;
-            
-            if(isNotBetweenHorizontalWalls || isNotBetweenVerticallWalls)
-            {
-                wallCollison = true;
-            }
-
-            for(var i = 0; i < rest.length ; i++)
-            {
-                if( snakeX === rest[i][0] && snakeY === rest[i][1] )
-                {
-                    sankeCollsion = true;
-                }
-            }
-            return wallCollison || sankeCollsion;
         };
 
         this.isEatingApple = function(appleToEat)
@@ -176,11 +226,11 @@ window.onload = function()
             ctx.restore();
 
         };
-
+            //Position aléatoire de la Pomme.
         this.setNewPosition = function()
         {
             var newX = Math.round(Math.random() * (widthInBlocks -1));
-            var newY = Math.round(Math.random() * (widthInBlocks -1));
+            var newY = Math.round(Math.random() * (heightInBlocks -1));
             this.position = [newX, newY];
         };
 
@@ -219,6 +269,9 @@ window.onload = function()
             case 40:
                 newDirection = "down";
                 break;
+            case 32:
+                restart();
+                return;   
             default:
                 return;
             
