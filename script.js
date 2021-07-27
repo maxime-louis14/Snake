@@ -79,7 +79,7 @@ function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
           if(instance.snake.isEatingApple(apple))
           {
               instance.score++;
-              instance.sankee.ateApple = true;
+              instance.sanke.ateApple = true;
               do
               {
                 instance.apple.setNewPosition(instance.widthInBlocks, instance.heightInBlocks);
@@ -135,9 +135,9 @@ function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
         this.drawScore = function()
     {
         this.ctx.save();
-        this.ctx.fillText(this.score.toString(), 5, this.canvas.height -5);
+        this.ctx.fillText(this.score.toString(), 5, this.canvas.height - 5 );
         this.ctx.restore();   
-    }
+    };
     
 }
 // Function constructeur du serpent.
