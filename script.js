@@ -2,6 +2,43 @@ var snake;
 var apple;
 var snakeGame;
 
+window.onload = function()
+{
+    snakeGame = newSnakeGame(900,600,100);
+    snake = new Snake ([[6,4], [5,4], [4,4] ,[3,4], [2,4]], "right");
+    apple = new Apple([10,10]);    
+    snakeGame.init(snake,apple);
+}
+
+document.onkeydown = function handleKeyDown(e)
+{
+    var key = e.keyCode;
+    var newDirection;
+    switch(key)
+    {
+        case 37:
+            newDirection = "left";
+            break;
+        case 38:
+            newDirection = "up";
+            break;
+        case 39:
+            newDirection = "right";
+            break;
+        case 40:
+            newDirection = "down";
+            break;
+        case 32:
+            snake = new Snake ([[6,4], [5,4], [4,4] ,[3,4], [2,4]], "right");
+            apple = new Apple([10,10]);    
+            snakeGame.init(snake,apple);
+            return;   
+        default:
+            return;      
+    }
+    snakeGame.snake.setDirection(newDirection);
+}
+// Function constructeru
 function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
 {
     this.canvas = document.createElement('canvas');
@@ -50,8 +87,8 @@ function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
               while(instance.apple.isOnSnake(snakee))
           }
           instance.ctx.clearRect(0,0,instance.canvas.Width, instance.canvas.Height);
-          instance.snake.draw();
-          instance.apple.draw();
+          instance.snake.draw(instance.ctx, instance.blockSize);
+          instance.apple.draw(instance.ctx, instance.blockSize);
           instance.drawScore();
           timeout = setTimeout(refreshCanvas,delay);
         }
@@ -103,117 +140,88 @@ function SnakeGame(canvasWidth, canvasHeight, blockSize, delay)
     }
     
 }
-window.onload = function()
+// Function constructeur du serpent.
+function Snake(body, direction)
 {
-    var canvasWidth = 900;
-    var canvasHeight = 600;
-    var blockSize = 30;
-    var ctx;
-    var delay = 100;
-    var sankee;
-    var applee;
-    var widthInBlocks = canvasWidth/blockSize;
-    var heightInBlocks = canvasHeight/blockSize;
-    var score;
-    
-    init();
-
-    function restart()
+    this.body = body;
+    this.direction = direction;
+    this.ateApple = false;
+    this.draw = function(ctx,blockSize)
     {
-        sankee = new Snake ([[6,4], [5,4], [4,4] ,[3,4], [2,4]], "right");
-        applee = new Apple([10,10]);
-        score = 0; 
-        refreshCanvas();   
-    }
-
-
-    function drawBlock(ctx, position)
+        ctx.save();
+        ctx.fillStyle = "#ff0000";
+        for(var i = 0; i < this.body.length; i++)
+        {
+            var x = position[0] * blockSize;
+            var y = position[1] * blockSize;
+            ctx.fillRect(x , y , blockSize, blockSize);
+        }
+        ctx.restore();
+    };
+    this.advance = function()
     {
-       
+        var nextPosition = this.body[0].slice();
+        switch(this.direction)
+        {
+            case "left":
+                nextPosition[0] -= 1;
+                break;
+            case "right":
+                nextPosition[0] += 1;
+                 break;
+            case "down":
+                nextPosition[1] += 1;    
+            break;
+            case "up":
+                nextPosition[1] -= 1;*6
+                break;
+            default:
+                throw("Invalid Direction");    
+        }
+        this.body.unshift(nextPosition);
+        if (!this.ateApple)
+        this.body.pop();
+        else
+        this.ateApple = false;
     };
 
-    function Snake(body, direction)
+    this.setDirection = function(newDirection)
     {
-        this.body = body;
-        this.direction = direction;
-        this.ateApple = false;
-        this.draw = function()
+        var allowedDirections;
+        switch(this.direction)
         {
-            ctx.save();
-            ctx.fillStyle = "#ff0000";
-            for(var i = 0; i < this.body.length; i++)
-            {
-                drawBlock(ctx, this.body[i]);
-                var x = position[0] * blockSize;
-                var y = position[1] * blockSize;
-                ctx.fillRect(x , y , blockSize, blockSize);
-            }
-            ctx.restore();
-        };
-        this.advance = function()
-        {
-            var nextPosition = this.body[0].slice();
-            switch(this.direction)
-            {
-                case "left":
-                    nextPosition[0] -= 1;
-                    break;
-                case "right":
-                    nextPosition[0] += 1;
-                     break;
-                case "down":
-                    nextPosition[1] += 1;    
+            case "left":
+            case "right":
+                allowedDirections = ["up", "down"];
+                 break;
+            case "down":
+            case "up":
+                allowedDirections = ["left", "right"];
                 break;
-                case "up":
-                    nextPosition[1] -= 1;
-                    break;
-                default:
-                    throw("Invalid Direction");    
-            }
-            this.body.unshift(nextPosition);
-            if (!this.ateApple)
-            this.body.pop();
-            else
-            this.ateApple = false;
-        };
+            default:
+                throw("Invalid Direction");    
+        }
 
-        this.setDirection = function(newDirection)
+        if(allowedDirections.indexOf(newDirection) > -1)
         {
-            var allowedDirections;
-            switch(this.direction)
-            {
-                case "left":
-                case "right":
-                    allowedDirections = ["up", "down"];
-                     break;
-                case "down":
-                case "up":
-                    allowedDirections = ["left", "right"];
-                    break;
-                default:
-                    throw("Invalid Direction");    
-            }
+            this.direction = newDirection;
+        }
+    };
 
-            if(allowedDirections.indexOf(newDirection) > -1)
-            {
-                this.direction = newDirection;
-            }
-        };
+    this.isEatingApple = function(appleToEat)
+    {
+        var head = this.body[0];
+        if(head[0] === appleToEat.position[0] && head[1] === appleToEat.position[1])
+            return true;
+        else
+            return false;
+    };
+}
 
-        this.isEatingApple = function(appleToEat)
-        {
-            var head = this.body[0];
-            if(head[0] === appleToEat.position[0] && head[1] === appleToEat.position[1])
-                return true;
-            else
-                return false;
-        };
-    }
-
-    function Apple(position)
+function Apple(position)
     {
         this.position = position;
-        this.draw = function()
+        this.draw = function(ctx,blockSize)
         {
             ctx.save();
             ctx.fillStyle = "#33cc33";
@@ -249,34 +257,14 @@ window.onload = function()
         };
     }
 
-
-
-    document.onkeydown = function handleKeyDown(e)
+    function restart()
     {
-        var key = e.keyCode;
-        var newDirection;
-        switch(key)
-        {
-            case 37:
-                newDirection = "left";
-                break;
-            case 38:
-                newDirection = "up";
-                break;
-            case 39:
-                newDirection = "right";
-                break;
-            case 40:
-                newDirection = "down";
-                break;
-            case 32:
-                restart();
-                return;   
-            default:
-                return;
-            
-        }
-        sankee.setDirection(newDirection);
+        sankee = new Snake ([[6,4], [5,4], [4,4] ,[3,4], [2,4]], "right");
+        applee = new Apple([10,10]);
+        score = 0; 
+        refreshCanvas();   
     }
+
+  
 
 }
