@@ -1,4 +1,4 @@
-//Création Canvas plus du serpent  //
+//Création Canvas //
 window.onload = function () {
   const canvasWidth = 900;
   const canvasHeight = 600;
@@ -27,16 +27,13 @@ window.onload = function () {
     document.body.appendChild(canvas);
     launch();
   }
-  // défini la taile du serpent et celle de la pomme  //
+  // la taille du serpent, le délait = sont déplacement, et le score.
   function launch() {
     snakee = new Snake(
       [
-        [6, 4],
-        [5, 4],
-        [4, 4],
-        [3, 4],
-        [2, 4],
+        [6, 4], [5, 4], [4, 4], [3, 4], [2, 4],
       ],
+
       "right"
     );
     applee = new Apple([10, 10]);
@@ -46,6 +43,7 @@ window.onload = function () {
     refreshCanvas();
   }
 
+    // Elle intervient quand il y a un game Over
   function refreshCanvas() {
     snakee.advance();
     if (snakee.checkCollision()) {
@@ -68,7 +66,7 @@ window.onload = function () {
       timeout = setTimeout(refreshCanvas, delay);
     }
   }
-
+    // style de la police.
   function gameOver() {
     ctx.save();
     ctx.font = "bold 70px sans-serif";
@@ -93,6 +91,7 @@ window.onload = function () {
     ctx.restore();
   }
 
+      // style de la police du score
   function drawScore() {
     ctx.save();
     ctx.font = "bold 200px sans-serif";
@@ -114,7 +113,7 @@ window.onload = function () {
     ctx.fillRect(x, y, blockSize, blockSize);
   }
 
-  //Fonction constructrice du serpent
+  //Fonction de direction du serpent
   function Snake(body, direction) {
     this.body = body;
     this.direction = direction;
@@ -202,7 +201,7 @@ window.onload = function () {
     };
   }
 
-  //Fonction constructrice de la pomme//
+  //Fonction position de la pomme
   function Apple(position) {
     this.position = position;
     this.draw = function () {
@@ -234,34 +233,7 @@ window.onload = function () {
       return isOnSnake;
     };
   }
-
-  /*
-    document.onkeydown = function handleKeyDown(e){
-      const key = e.keyCode;
-      let newDirection;
-      switch(key){
-        case 37:
-          newDirection = "left";
-          break;
-        case 38:
-          newDirection = "up";
-          break;
-        case 39:
-          newDirection = "right";
-          break;
-        case 40:
-          newDirection = "down";
-          break;
-        case 32:
-          restart();
-          return;
-        default:
-          return;
-      }
-      snakee.setDirection(newDirection);
-    }
-    */
-
+  
   //Gestion des touches du clavier
 
   const map = {}; // You could also use an array
