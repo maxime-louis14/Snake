@@ -167,6 +167,8 @@ window.onload = function () {
         this.direction = newDirection;
       }
     };
+    
+    // fonction de collision
     this.checkCollision = function () {
       let wallCollision = false;
       let snakeCollision = false;
@@ -233,7 +235,7 @@ window.onload = function () {
       return isOnSnake;
     };
   }
-  
+
   //Gestion des touches du clavier
 
   const map = {}; // You could also use an array
