@@ -27,15 +27,10 @@ window.onload = function () {
     document.body.appendChild(canvas);
     launch();
   }
+
   // la taille du serpent, le délait = sont déplacement, et le score.
   function launch() {
-    snakee = new Snake(
-      [
-        [6, 4], [5, 4], [4, 4], [3, 4], [2, 4],
-      ],
-
-      "right"
-    );
+    snakee = new Snake([ [6, 4], [5, 4], [4, 4],],"right");
     applee = new Apple([10, 10]);
     score = 0;
     clearTimeout(timeout);
@@ -66,6 +61,7 @@ window.onload = function () {
       timeout = setTimeout(refreshCanvas, delay);
     }
   }
+
     // style de la police.
   function gameOver() {
     ctx.save();
@@ -83,6 +79,7 @@ window.onload = function () {
       centreX,
       centreY - 120
     );
+
     ctx.fillText(
       "Appuyer sur la touche espace pour rejouer",
       centreX,
@@ -121,11 +118,12 @@ window.onload = function () {
     this.draw = function () {
       ctx.save();
       ctx.fillStyle = "#ff0000";
-      for (let i = 0; i < this.body.length; i++) {
+      for (var i = 0; i < this.body.length; i++) {
         drawBlock(ctx, this.body[i]);
       }
       ctx.restore();
     };
+    
     this.advance = function () {
       const nextPosition = this.body[0].slice();
       switch (this.direction) {
@@ -149,6 +147,7 @@ window.onload = function () {
       else this.ateApple = false;
     };
 
+    // Les posibilité de déplacement 
     this.setDirection = function (newDirection) {
       let allowedDirections;
       switch (this.direction) {
@@ -185,6 +184,7 @@ window.onload = function () {
       if (isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls) {
         wallCollision = true;
       }
+      
       for (let i = 0; i < rest.length; i++) {
         if (snakeX == rest[i][0] && snakeY == rest[i][1]) {
           snakeCollision = true;
@@ -202,6 +202,28 @@ window.onload = function () {
       else return false;
     };
   }
+
+  //Gestion des touches du clavier
+
+  const map = {}; // Vous pouvez également utiliser un tableau
+  onkeydown = onkeyup = function (e) {
+    e = e || event; // traiter avec IE
+    map[e.keyCode] = e.type == "keydown";
+    let newDirection;
+    console.log(map);
+    if (map[37]) {
+      newDirection = "left";
+    } else if (map[38]) {
+      newDirection = "up";
+    } else if (map[39]) {
+      newDirection = "right";
+    } else if (map[40]) {
+      newDirection = "down";
+    } else if (map[32]) {
+      launch();
+    }
+    snakee.setDirection(newDirection);
+  };
 
   //Fonction position de la pomme
   function Apple(position) {
@@ -235,28 +257,6 @@ window.onload = function () {
       return isOnSnake;
     };
   }
-
-  //Gestion des touches du clavier
-
-  const map = {}; // You could also use an array
-  onkeydown = onkeyup = function (e) {
-    e = e || event; // to deal with IE
-    map[e.keyCode] = e.type == "keydown";
-    let newDirection;
-    console.log(map);
-    if (map[37]) {
-      newDirection = "left";
-    } else if (map[38]) {
-      newDirection = "up";
-    } else if (map[39]) {
-      newDirection = "right";
-    } else if (map[40]) {
-      newDirection = "down";
-    } else if (map[32]) {
-      launch();
-    }
-    snakee.setDirection(newDirection);
-  };
 
   window.addEventListener("keydown", onkeyup);
   window.addEventListener("keyup", onkeydown);
