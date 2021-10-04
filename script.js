@@ -125,7 +125,8 @@ window.onload = function () {
     };
     
     this.advance = function () {
-      const nextPosition = this.body[0].slice();
+      const nextPosition = this.body[0]
+      ;
       switch (this.direction) {
         case "left":
           nextPosition[0] -= 1;
